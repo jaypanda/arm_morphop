@@ -1,7 +1,9 @@
 # arm_morphop
-morphological operations - open/close
-implemented sse and openmp implementations
-toggle flags in makefile.inc
+1) morphological operations - open/close
+
+2) sse and openmp implementations
+
+3) toggle flags in makefile.inc
 
 
 INSTALL: make
