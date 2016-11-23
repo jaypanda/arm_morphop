@@ -40,46 +40,69 @@ void erode( uchar *input, uchar *output, int width, int height, int pad){
   int step = width+2*pad;
 	int struct_el_size = 5;
 	const int offs[] = {-1, +1, 0, -step, +step};
-	uchar *temp_out = new uchar[16];
-  for( int i = pad ; i < height+pad ; ++i ){
-		for( int j = pad ; j < width+pad-16 ; j+=16 ){
-			int ind_o = ((i-pad)*width)+j-pad;
-			int ind_i = (i*step) + j;
+
+	int i, j, k, ind_o, ind_i;
+  __m128i m;
+#ifdef _OPENMP                                                                             
+#pragma omp parallel shared (input, output, width, height, pad, step, struct_el_size, offs ) private (i,j,k,m,ind_o,ind_i)
+	{
+#pragma omp for		
+#endif
+  for( i = pad ; i < height+pad ; ++i ){
+		for( j = pad ; j < width+pad-16 ; j+=16 ){
+			ind_o = ((i-pad)*width)+j-pad;
+			ind_i = (i*step) + j;
 			// unaligned loads
-			__m128i m = _mm_loadu_si128((const __m128i*)(input + ind_i + offs[0]));
+			m = _mm_loadu_si128((const __m128i*)(input + ind_i + offs[0]));
 			m = _mm_min_epu8(m, _mm_loadu_si128((const __m128i*)(input + ind_i + offs[1])));
       //aligned loads
 			m = _mm_min_epu8(m, _mm_loadu_si128((const __m128i*)(input + ind_i + offs[2])));
 			m = _mm_min_epu8(m, _mm_loadu_si128((const __m128i*)(input + ind_i + offs[3])));
 			m = _mm_min_epu8(m, _mm_loadu_si128((const __m128i*)(input + ind_i + offs[4])));
 			// saving result in output image
+	    uchar *temp_out = new uchar[16];
 			_mm_store_si128((__m128i*)temp_out, m);
 			memcpy(output + ind_o, temp_out, min(16, width-j));
 		}
 	}
+#ifdef _OPENMP
+  }
+#endif
 }
 
 void dilate( uchar *input, uchar *output, int width, int height, int pad){
   int step = width+2*pad;
 	int struct_el_size = 5;
 	const int offs[] = {-1, +1, 0, -step, +step};
-	uchar *temp_out = new uchar[16];
-  for( int i = pad ; i < height+pad ; ++i ){
-		for( int j = pad ; j < width+2*pad-16 ; j+=16 ){
-			int ind_o = ((i-pad)*width)+j-pad;
-			int ind_i = (i*step) + j;
+
+	int i, j, k, ind_o, ind_i;
+  __m128i m;
+#ifdef _OPENMP                                                                             
+#pragma omp parallel shared (input, output, width, height, pad, step, struct_el_size, offs ) private (i,j,k,m,ind_o,ind_i)
+	{
+#pragma omp for		
+#endif
+  for( i = pad ; i < height+pad ; ++i ){
+		for( j = pad ; j < width+2*pad-16 ; j+=16 ){
+			ind_o = ((i-pad)*width)+j-pad;
+			ind_i = (i*step) + j;
 			// unaligned loads
-			__m128i m = _mm_loadu_si128((const __m128i*)(input + ind_i + offs[0]));
+			m = _mm_loadu_si128((const __m128i*)(input + ind_i + offs[0]));
 			m = _mm_max_epu8(m, _mm_loadu_si128((const __m128i*)(input + ind_i + offs[1])));
       // aligned loads
 			m = _mm_max_epu8(m, _mm_loadu_si128((const __m128i*)(input + ind_i + offs[2])));
 			m = _mm_max_epu8(m, _mm_loadu_si128((const __m128i*)(input + ind_i + offs[3])));
 			m = _mm_max_epu8(m, _mm_loadu_si128((const __m128i*)(input + ind_i + offs[4])));
 			// saving result in output image
+	    uchar *temp_out = new uchar[16];
 			_mm_store_si128((__m128i*)temp_out, m);
 			memcpy(output + ind_o, temp_out, min(16, width-j));
 		}
 	}
+#ifdef _OPENMP
+  }
+#endif
+
 }
 #endif
 
@@ -113,21 +136,33 @@ void erode( uchar *input, uchar *output, int width, int height, int pad){
 	}
 #endif
 }
+ 
 void dilate( uchar *input, uchar *output, int width, int height, int pad){
-	int step = width+2*pad;
+  int step = width+2*pad;
 	int struct_el_size = 5;
 	const int offs[] = {-1, +1, 0, -step, +step};
-  for( int i = pad ; i < height+pad ; ++i ){
-		for( int j = pad ; j < width+pad ; ++j ){
-			uchar maxVal = 0;
-			int ind_o = ((i-pad)*width)+j-pad;
-			int ind_i = (i*step) + j;
-			for( int k = 0 ; k < struct_el_size ; ++k ){
+
+	int i, j, k, ind_o, ind_i;
+	uchar maxVal;
+#ifdef _OPENMP                                                                             
+#pragma omp parallel shared (input, output, width, height, pad, step, struct_el_size, offs ) private (i,j,k,maxVal,ind_o,ind_i)
+	{
+#pragma omp for		
+#endif
+  for( i = pad ; i < height+pad ; ++i ){
+		for( j = pad ; j < width+pad ; ++j ){
+			maxVal = 0;
+			ind_o = ((i-pad)*width)+j-pad;
+			ind_i = (i*step) + j;
+			for( k = 0 ; k < struct_el_size ; ++k ){
 				maxVal = max(maxVal, input[ind_i + offs[k]]);
 			}
 			output[ ind_o ] = maxVal;
 		}
 	}
+#ifdef _OPENMP
+	}
+#endif
 }
 
 #endif
