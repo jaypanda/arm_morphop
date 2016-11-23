@@ -16,9 +16,9 @@ int main(int argc, char *argv[]){
 	uchar *input;
 	uchar *output;
 	
-	int width, height, levels;
-	string input_file_path;
-	string output_file_path;
+	int width=0, height=0, levels=0;
+	string input_file_path="";
+	string output_file_path="";
 	
 	cxxopts::Options options("open_op test", "input image raw file and compute output image with morphological open operation");
 	options.add_options()

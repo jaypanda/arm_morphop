@@ -38,13 +38,12 @@ using namespace std;
 
 void erode( uchar *input, uchar *output, int width, int height, int pad){
   int step = width+2*pad;
-	int struct_el_size = 5;
 	const int offs[] = {-1, +1, 0, -step, +step};
 
-	int i, j, k, ind_o, ind_i;
+	int i, j, ind_o, ind_i;
   __m128i m;
 #ifdef _OPENMP                                                                             
-#pragma omp parallel shared (input, output, width, height, pad, step, struct_el_size, offs ) private (i,j,k,m,ind_o,ind_i)
+#pragma omp parallel shared (input, output, width, height, pad, step, struct_el_size, offs ) private (i,j,m,ind_o,ind_i)
 	{
 #pragma omp for		
 #endif
@@ -72,13 +71,12 @@ void erode( uchar *input, uchar *output, int width, int height, int pad){
 
 void dilate( uchar *input, uchar *output, int width, int height, int pad){
   int step = width+2*pad;
-	int struct_el_size = 5;
 	const int offs[] = {-1, +1, 0, -step, +step};
 
-	int i, j, k, ind_o, ind_i;
+	int i, j, ind_o, ind_i;
   __m128i m;
 #ifdef _OPENMP                                                                             
-#pragma omp parallel shared (input, output, width, height, pad, step, struct_el_size, offs ) private (i,j,k,m,ind_o,ind_i)
+#pragma omp parallel shared (input, output, width, height, pad, step, struct_el_size, offs ) private (i,j,m,ind_o,ind_i)
 	{
 #pragma omp for		
 #endif
