@@ -187,10 +187,10 @@ uchar* pad_image ( uchar *img, int width, int height, int pad ){
 void open_op( uchar *input, uchar *output, int width, int height, int levels){
 	int pad = 4;
 	uchar* input_padded = pad_image( input, width, height, pad );
-	ofstream tempf( "temp.raw", ios::out | ios::binary );
-	tempf.write((char*)input_padded, (width+2*pad)*(height+2*pad));
-	tempf.close();
-	cout << "image padded by " << pad << endl;
+//	ofstream tempf( "temp.raw", ios::out | ios::binary );
+//	tempf.write((char*)input_padded, (width+2*pad)*(height+2*pad));
+//	tempf.close();
+//	cout << "image padded by " << pad << endl;
 
 	while (levels--){
 		erode( input_padded, output, width, height, pad );
