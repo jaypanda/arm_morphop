@@ -2,9 +2,9 @@
 #include <fstream>
 #include <stdio.h>
 #include <stdlib.h>
-#include "../external/cxxopts/src/cxxopts.hpp"
+#include "cxxopts.hpp"
 
-#include "../src/open_op.h"
+#include "morph_op.h"
 
 using namespace std;
 
